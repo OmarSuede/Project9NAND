@@ -1,0 +1,137 @@
+class DiceGame {
+    field Array rollCounts;  // rollCounts[0] counts 1s, ..., rollCounts[5] counts 6s
+    field int counter;       // pseudo-random counter
+
+    constructor DiceGame new() {
+        let rollCounts = Array.new(6);
+        let counter = 1;
+        do Screen.clearScreen();
+        return this;
+    }
+
+    method void start() {
+        var int key, roll;
+
+        do Output.moveCursor(0, 0);
+        do Output.printString("Press ENTER (128) to roll the dice. Press Q (113) to quit.");
+        do Output.println();
+
+        while (true) {
+            let key = Keyboard.keyPressed();
+
+            if (key = 128) { // ENTER
+                let roll = rollDice();
+                do clearDiceArea();
+                do drawFace(roll);
+                do showNumber(roll);
+                do updateScore(roll);
+                do displayScore();
+            }
+
+            if (key = 113) { // Q
+                do Output.moveCursor(20, 0);
+                do Output.printString("Thanks for playing!");
+                return;
+            }
+
+            do Sys.wait(100);
+        }
+
+        return;
+    }
+
+    method int rollDice() {
+        var int temp, result;
+
+        let counter = counter + 7;
+        let temp = (counter * 5) + 3;
+        let temp = temp - ((temp / 6) * 6); // simulate % 6
+        let result = temp + 1;
+
+        return result;
+    }
+
+    method void showNumber(int n) {
+        do Output.moveCursor(3, 0);
+        do Output.printString("You rolled: ");
+        do Output.printInt(n);
+        do Output.println();
+        return;
+    }
+
+    method void updateScore(int n) {
+        let rollCounts[n - 1] = rollCounts[n - 1] + 1;
+        return;
+    }
+
+    method void displayScore() {
+        var int i;
+
+        do Output.moveCursor(5, 0);
+        do Output.printString("Roll history:");
+        do Output.println();
+
+        let i = 0;
+        while (i < 6) {
+            do Output.printString("  ");
+            do Output.printInt(i + 1);
+            do Output.printString(": ");
+            do Output.printInt(rollCounts[i]);
+            do Output.println();
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    method void clearDiceArea() {
+        // Clears rectangle around the dice
+        do Screen.clearScreen(); // Simple full clear (you could limit to a box if needed)
+        return;
+    }
+
+    method void drawFace(int n) {
+        var int x, y;
+        let x = 100;
+        let y = 100;
+
+        // Draw dice box
+        do Screen.drawRectangle(x, y, x + 30, y + 30);
+
+        // Center dot
+        if (n = 1) {
+            do drawDot(x + 15, y + 15);
+        }
+        if (n = 3) {
+            do drawDot(x + 15, y + 15);
+        }
+        if (n = 5) {
+            do drawDot(x + 15, y + 15);
+        }
+
+        // Top-left and bottom-right
+        if (~(n < 2)) {
+            do drawDot(x + 5, y + 5);
+            do drawDot(x + 25, y + 25);
+        }
+
+        // Top-right and bottom-left
+        if (~(n < 4)) {
+            do drawDot(x + 25, y + 5);
+            do drawDot(x + 5, y + 25);
+        }
+
+        // Middle-left and middle-right
+        if (n = 6) {
+            do drawDot(x + 5, y + 15);
+            do drawDot(x + 25, y + 15);
+        }
+
+        return;
+    }
+
+    method void drawDot(int x, int y) {
+        do Screen.drawRectangle(x, y, x + 1, y + 1);
+        return;
+    }
+}

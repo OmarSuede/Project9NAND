@@ -1,0 +1,8 @@
+class Main {
+    function void main() {
+        var DiceGame game;
+        let game = DiceGame.new();
+        do game.start();
+        return;
+    }
+}
